@@ -1,0 +1,40 @@
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# Java
+*.class
+target/
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Package files
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment configuration
+.env
+
+# Ignore build artifacts
+build/
+dist/
