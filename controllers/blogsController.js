@@ -1,11 +1,11 @@
 const { Post } = require("../Models/Post");
 
 
-exports.posts = async (req, res) => {
+exports.getBlogs = async (req, res) => {
 
     try {
         // const posts = await Post.find().populate('author').select('-password');
-        const posts = await Post.find().populate('author',['name']).sort({createAt:-1}).limit(20);
+        const posts = await Post.find().populate('author',['name']).sort({createdAt:-1}).limit(20);
         res.json({ status: 200, message: "file received",posts:posts });
     } catch (err) {
         console.log(err);
@@ -14,13 +14,13 @@ exports.posts = async (req, res) => {
 
 }
 
-exports.singlepost = async (req, res) => {
+exports.getSingleBlog = async (req, res) => {
 
     try {
         
-        const {postId} = req.params;
+        const { blogId } = req.params;
         
-        const post = await Post.findById(postId).populate('author',['name']);
+        const post = await Post.findById(blogId).populate('author',['name']);
         
         if(!post) throw new Error('Post Not Found!!!');
         

@@ -49,7 +49,7 @@ exports.login = async (req, res) => {
         if (!existingUser) {
             return res.status(400).json({ status: 400, message: "User Not found!!!" });
         }
-
+        
         const passwordMatch = bcrypt.compareSync(password, existingUser.password);
 
         if (!passwordMatch) {
@@ -57,7 +57,7 @@ exports.login = async (req, res) => {
         }
 
 
-        const secretKey = process.env.JWY_SECRET_KEY;
+        const secretKey = process.env.JWT_SECRET_KEY;
         jwt.sign({ email, id: existingUser._id }, secretKey, {}, (err, token) => {
             if (err) throw err;
             return res.cookie('token', token).json({ status: 200, message: "Login successfull",data:{name:existingUser.name,email:existingUser.email,id:existingUser._id.toString()} });
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
 }
 
 
-exports.profile = (req,res) => {
+exports.profile = async (req,res) => {
     
     try {
         
@@ -82,14 +82,17 @@ exports.profile = (req,res) => {
         if(!token){
             return res.status(404).json({status:404,message:'Invalid Token'});
         }
-
-        const secretKey = process.env.JWY_SECRET_KEY;
+        
+        let userId = '';
+        const secretKey = process.env.JWT_SECRET_KEY;
         jwt.verify(token,secretKey, (err,info) => {
 
             if(err) throw err;
-
-            return res.json({status:200,message:'Token verified',data:info});
+            userId = info.id;
         });
+
+        const user = await User.findById(userId).select('-password').populate('blogPosts.postId');
+        return res.json({ status: 200, message: 'Token verified', data: user });
 
     } catch (err) {
         res.status(400).json({status:499,message:"Something went wrong!!!"});

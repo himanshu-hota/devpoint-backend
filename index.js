@@ -8,7 +8,7 @@ const path = require('path');
 const {upload} = require('./middlewares/multerMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
-const postsRoutes = require('./routes/postsRoutes');
+const blogsRoutes = require('./routes/blogsRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 
@@ -37,8 +37,8 @@ app.get('/',(req,res) => {
 
 app.use('/auth',authRoutes);
 app.use('/blog',upload.single('file'), blogRoutes);
-app.use('/posts', postsRoutes);
-app.use('/user', userRoutes);
+app.use('/blogs', blogsRoutes);
+app.use('/user', upload.single('file'), userRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

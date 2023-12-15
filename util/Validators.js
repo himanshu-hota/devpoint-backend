@@ -18,6 +18,8 @@ exports.registerValdator = [
 
 ];
 
+
+
 exports.loginValdator = [
     body('email').isEmail().withMessage('Invalid email'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),

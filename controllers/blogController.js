@@ -1,20 +1,20 @@
 const { Post } = require('../Models/Post');
+const { User } = require('../Models/User');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
+
+
 exports.create = async (req, res) => {
-
     try {
-
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array().map(error => ({ field: error.path, message: error.msg })) });
         }
-
 
         const file = req.file;
         let filePath = '';
@@ -23,27 +23,26 @@ exports.create = async (req, res) => {
         }
 
         const { token } = req.cookies;
-        const secretKey = process.env.JWY_SECRET_KEY;
+        
+        const secretKey = process.env.JWT_SECRET_KEY;
         let authorId = '';
         jwt.verify(token, secretKey, (err, info) => {
-
             if (err) throw err;
             authorId = info.id;
         });
 
         const { title, summary, content } = req.body;
-        await Post.create({ title, summary, content, cover: filePath,author:authorId});
+        const newPost = await Post.create({ title, summary, content, cover: filePath, author: authorId });
+
+        // Update the user's blogPosts field with the new post
+        await User.findByIdAndUpdate(authorId, { $push: { blogPosts: { postId: newPost._id } }, $inc: { totalBlogs: 1 } });
 
         return res.json({ status: 200, message: "Blog Created!!!" });
-
-
     } catch (err) {
         console.log(err);
         res.status(400).json({ status: 400, message: "Something went wrong!!!" });
     }
-
-}
-
+};
 
 exports.update = async (req, res) => {
     const session = await mongoose.startSession();
@@ -65,7 +64,7 @@ exports.update = async (req, res) => {
         }
 
         const { token } = req.cookies;
-        const secretKey = process.env.JWY_SECRET_KEY;
+        const secretKey = process.env.JWT_SECRET_KEY;
         let authorId = '';
         jwt.verify(token, secretKey, (err, info) => {
             if (err) throw err;
@@ -115,6 +114,25 @@ exports.update = async (req, res) => {
         res.status(400).json({ status: 400, message: 'Something went wrong!!!' });
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -169,6 +187,47 @@ exports.update = async (req, res) => {
 //                 } 
 //             });
 //         }
+
+//         return res.json({ status: 200, message: "Blog Created!!!" });
+
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(400).json({ status: 400, message: "Something went wrong!!!" });
+//     }
+
+// }
+
+// exports.create = async (req, res) => {
+
+//     try {
+
+//         const errors = validationResult(req);
+
+//         if (!errors.isEmpty()) {
+//             return res.status(422).json({ errors: errors.array().map(error => ({ field: error.path, message: error.msg })) });
+//         }
+
+
+//         const file = req.file;
+//         let filePath = '';
+//         if (file) {
+//             filePath = file.destination + file.filename;
+//         }
+
+//         const { token } = req.cookies;
+//         const secretKey = process.env.JWY_SECRET_KEY;
+//         let authorId = '';
+//         jwt.verify(token, secretKey, (err, info) => {
+
+//             if (err) throw err;
+//             authorId = info.id;
+//         });
+
+        
+
+//         const { title, summary, content } = req.body;
+//         await Post.create({ title, summary, content, cover: filePath,author:authorId});
 
 //         return res.json({ status: 200, message: "Blog Created!!!" });
 
