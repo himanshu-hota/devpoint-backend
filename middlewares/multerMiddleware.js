@@ -13,6 +13,8 @@ const storage = multer.diskStorage({
     },
 });
 
+// const storage = multer.memoryStorage();
+
 const fileFilter = function (req, file, cb) {
     // Accept only jpg, jpeg, webp, and png files
     const allowedFileTypes = /jpeg|jpg|png|webp/;
@@ -29,3 +31,4 @@ const fileFilter = function (req, file, cb) {
 };
 
 exports.upload = multer({ storage: storage, fileFilter: fileFilter });
+// exports.upload = multer({ fileFilter: fileFilter });

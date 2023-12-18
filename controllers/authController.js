@@ -3,6 +3,7 @@ const {User} = require('../Models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
 exports.register = async (req, res) => {
 
     try {
@@ -58,16 +59,16 @@ exports.login = async (req, res) => {
 
 
         const secretKey = process.env.JWT_SECRET_KEY;
-        jwt.sign({ email, id: existingUser._id }, secretKey, {}, (err, token) => {
+        const expiresIn = 7 * 24 * 60 * 60;
+        jwt.sign({ email, id: existingUser._id }, secretKey, { expiresIn }, (err, token) => {
             if (err) throw err;
-            return res.cookie('token', token).json({ status: 200, message: "Login successfull",data:{name:existingUser.name,email:existingUser.email,id:existingUser._id.toString()} });
+            return res.cookie('token', token).json({ status: 200, message: "Login successfull",data:{name:existingUser.name,email:existingUser.email,id:existingUser._id.toString()},token });
         })
 
 
 
 
     } catch (err) {
-        console.log(err);
         return res.status(400).json({ status: 404, message: 'Something went wrong!!!' });
     }
 }
@@ -77,8 +78,8 @@ exports.profile = async (req,res) => {
     
     try {
         
-        const {token} = req.cookies;
-
+        const {token} = req.body;
+        
         if(!token){
             return res.status(404).json({status:404,message:'Invalid Token'});
         }
@@ -95,7 +96,7 @@ exports.profile = async (req,res) => {
         return res.json({ status: 200, message: 'Token verified', data: user });
 
     } catch (err) {
-        res.status(400).json({status:499,message:"Something went wrong!!!"});
+        return  res.status(400).json({status:499,message:"Something went wrong!!!"});
     }
 
 }
@@ -106,7 +107,7 @@ exports.logout = (req, res) => {
     try {
         return res.cookie('token','').json({ status: 200, message: 'Logout successful' });
     } catch (err) {
-        res.status(400).json({ status: 499, message: "Something went wrong!!!" });
+        return res.status(400).json({ status: 499, message: "Something went wrong!!!" });
     }
 
 }

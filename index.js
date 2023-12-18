@@ -3,7 +3,9 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
-const path = require('path');
+const morgan = require('morgan');
+const helmet = require('helmet');
+// const path = require('path');
 
 const {upload} = require('./middlewares/multerMiddleware');
 const authRoutes = require('./routes/authRoutes');
@@ -16,6 +18,8 @@ const app = express();
 
 
 // essentials
+app.use(morgan('combined'));
+app.use(helmet());
 // make env variables available in this file
 dotenv.config();
 // body parser for plain text
@@ -25,9 +29,9 @@ app.use(cookieParser())
 // allow cors requestes
 app.use(cors({ credentials: true, origin:'http://localhost:5173'}));
 // Define the path to the 'upload' folder
-const uploadFolderPath = path.join(__dirname, 'uploads');
+// const uploadFolderPath = path.join(__dirname, 'uploads');
 // Serve files from the 'upload' folder
-app.use('/uploads', express.static(uploadFolderPath));
+// app.use('/uploads', express.static(uploadFolderPath));
 
 
 // routes
@@ -54,6 +58,12 @@ const PORT = process.env.PORT || 4000;
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true,
 // };
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    res.status(500).send('Something went wrong there!!');
+});
+
 
 // Create a Mongoose connection using promises
 mongoose

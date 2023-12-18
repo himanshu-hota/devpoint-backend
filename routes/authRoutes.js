@@ -9,7 +9,7 @@ router.post('/register', registerValdator ,authController.register);
 
 router.post('/login', loginValdator, authController.login);
 
-router.get('/profile', authController.profile);
+router.post('/profile', authController.profile);
 
 router.post('/logout', authController.logout);
 

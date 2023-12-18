@@ -5,25 +5,22 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    email:{
-        type:String,
-        required:true,
+    email: {
+        type: String,
+        required: true,
         minlength: 5,
         maxlength: 255,
-        unique:true
+        unique: true
     },
     password: {
         type: String,
         required: true,
-        min:8
+        min: 8
     },
     profilePicture: {
         type: String,
     },
-    totalBlogs: {
-        type: Number,
-        default: 0  // default to 0 when a new user is created
-    },
+    publicId: String,
     blogPosts: [
         {
             postId: {

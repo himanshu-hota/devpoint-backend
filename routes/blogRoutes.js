@@ -9,4 +9,6 @@ router.post('/create', postValdator,blogController.create);
 
 router.put('/update', postValdator, blogController.update);
 
+router.put('/delete/:blogId', postValdator, blogController.delete);
+
 module.exports = router;
