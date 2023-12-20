@@ -28,24 +28,19 @@ app.use(express.json());
 app.use(cookieParser())
 // allow cors requestes
 app.use(cors({ credentials: true, origin:'http://localhost:5173'}));
-// Define the path to the 'upload' folder
-// const uploadFolderPath = path.join(__dirname, 'uploads');
-// Serve files from the 'upload' folder
-// app.use('/uploads', express.static(uploadFolderPath));
-
 
 // routes
-app.get('/',(req,res) => {
-    res.json('test ok');
-})
-
 app.use('/auth',authRoutes);
 app.use('/blog',upload.single('file'), blogRoutes);
 app.use('/blogs', blogsRoutes);
 app.use('/user', upload.single('file'), userRoutes);
 
+// Default route
+app.get('*', (req, res) => {
+    res.status(404).json({message:'You reached the space station!!!'});
+});
+
 app.use((err, req, res, next) => {
-    console.error(err.stack);
     res.status(500).send('Something went wrong!');
 });
 
@@ -61,7 +56,7 @@ const PORT = process.env.PORT || 4000;
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    res.status(500).send('Something went wrong there!!');
+    res.status(500).send('Internal server error');
 });
 
 
@@ -69,13 +64,9 @@ app.use((err, req, res, next) => {
 mongoose
     .connect(MONGO_URL)
     .then(() => {
-        console.log('Connected to MongoDB');
-
         // Start the server after the database connection is established
-        app.listen(PORT, () => {
-            console.log(`Server started at http://localhost:${PORT}`);
-        });
+        app.listen(PORT);
     })
     .catch((err) => {
-        console.error('MongoDB connection error:', err);
+        res.status(500).json({message:'Internal server error'});
     });

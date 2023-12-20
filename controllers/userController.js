@@ -14,7 +14,7 @@ exports.userprofile = async (req, res) => {
         const posts = await Post.find().populate('author', ['name']).sort({ createAt: -1 }).limit(20);
         return res.json({ status: 200, message: "file received", posts: posts });
     } catch (err) {
-        return res.status(400).json({ status: 400, message: "Something went wrong!!!" });
+        return res.status(400).json({ status: 400, message: "Could not get the user profile!!!" });
     }
 
 }
@@ -59,8 +59,7 @@ exports.updateProfile = async (req, res) => {
         if (oldProfilePicturePath) {
             await deleteImage(oldProfilePicturePath);
         }
-
-        deleteFileSync(filePath);
+        if(filePath) deleteFileSync(filePath);
 
         const passwordMatch = bcrypt.compareSync(currentpassword, userDoc.password);
         const passwordMatch2 = password.length > 8 ? (password == confirmpassword) : false;
@@ -91,7 +90,7 @@ exports.updateProfile = async (req, res) => {
         deleteImage(newProfilePictureURL.public_id);
         await session.abortTransaction();
         session.endSession();
-        return res.status(400).json({ status: 400, message: 'Something went wrong!!!' });
+        return res.status(400).json({ status: 400, message: 'Could not update the profile!!!' });
     }
 };
 
@@ -106,9 +105,9 @@ exports.bloggerProfile = async (req, res) => {
         const { bloggerId } = req.params;
 
         const blogger = await User.findById(bloggerId).select(['-password']).populate('blogPosts.postId', ['title', 'cover']);
-        return res.json({ status: 200, message: "Blogger Found!!!", user: blogger });
+        return res.json({ status: 200, message: "Blogger Found!!!", blogger: blogger });
     } catch (err) {
-        return res.status(400).json({ status: 400, message: "Something went wrong!!!" });
+        return res.status(400).json({ status: 400, message: "Could not fetch the blogger info!!!" });
     }
 
 }
@@ -120,7 +119,7 @@ exports.bloggers = async (req, res) => {
         const users = await User.find().select(['-password']);
         return res.json({ status: 200, message: "Bloggers found!!!", bloggers: users });
     } catch (err) {
-        return res.status(400).json({ status: 400, message: "Something went wrong!!!" });
+        return res.status(400).json({ status: 400, message: "Could not fetch the bloggers!!!" });
     }
 
 }

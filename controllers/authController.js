@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
 
         return res.status(201).json({status:201,message:'Registration successfull'});
     } catch (err) {
-        return res.status(400).json({status:404,message:'Something went wrong!!!'});
+        return res.status(400).json({status:404,message:'Could not register the user!!!'});
     }
 }
 
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
         }
 
         const { email, password } = req.body;
-
+        
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
             return res.status(400).json({ status: 400, message: "User Not found!!!" });
@@ -60,16 +60,14 @@ exports.login = async (req, res) => {
 
         const secretKey = process.env.JWT_SECRET_KEY;
         const expiresIn = 7 * 24 * 60 * 60;
+        
         jwt.sign({ email, id: existingUser._id }, secretKey, { expiresIn }, (err, token) => {
             if (err) throw err;
             return res.cookie('token', token).json({ status: 200, message: "Login successfull",data:{name:existingUser.name,email:existingUser.email,id:existingUser._id.toString()},token });
         })
 
-
-
-
     } catch (err) {
-        return res.status(400).json({ status: 404, message: 'Something went wrong!!!' });
+        return res.status(400).json({ status: 404, message: 'Could not log in!!!' });
     }
 }
 
@@ -107,7 +105,7 @@ exports.logout = (req, res) => {
     try {
         return res.cookie('token','').json({ status: 200, message: 'Logout successful' });
     } catch (err) {
-        return res.status(400).json({ status: 499, message: "Something went wrong!!!" });
+        return res.status(400).json({ status: 499, message: "Could not get the profile info!!!" });
     }
 
 }
