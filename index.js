@@ -27,7 +27,7 @@ app.use(express.json());
 // handles cookies
 app.use(cookieParser())
 // allow cors requestes
-app.use(cors({ credentials: true, origin: process.env.ENDPOINT}));
+app.use(cors());
 
 
 // routes
