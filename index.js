@@ -17,6 +17,11 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 dotenv.config();
 
+const corsOptions = {
+    origin: '*'
+}
+app.use(cors(corsOptions));
+
 // essentials
 app.use(morgan('combined'));
 app.use(helmet());
@@ -28,10 +33,7 @@ app.use(express.json());
 // handles cookies
 // app.use(cookieParser());
 // allow cors requestes
-const corsOptions = {
-    origin: '*'
-}
-app.use(cors(corsOptions));
+
 
 
 // routes
