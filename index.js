@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
@@ -27,11 +27,11 @@ app.use(express.json());
 // handles cookies
 app.use(cookieParser())
 // allow cors requestes
-const corsOptions = {
-    origin: 'https://devpoint-frontend.vercel.app', // Use * if you want to allow any origin
-    credentials: true, // Enable credentials (e.g., cookies, authentication headers)
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//     origin: '*', // Use * if you want to allow any origin
+//     credentials: true, // Enable credentials (e.g., cookies, authentication headers)
+// };
+// app.use(cors(corsOptions));
 // Enable CORS for all routes
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', 'https://devpoint-frontend.vercel.app/*');
@@ -47,6 +47,14 @@ app.use(cors(corsOptions));
 
 //     next();
 // });
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://devpoint-frontend.vercel.app');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 
 // routes
