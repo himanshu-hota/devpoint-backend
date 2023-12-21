@@ -2,7 +2,6 @@ const { validationResult } = require('express-validator');
 const {User} = require('../Models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { verifyToken } = require('../util/verfiyToken');
 
 
 exports.register = async (req, res) => {
@@ -62,8 +61,6 @@ exports.login = async (req, res) => {
         const secretKey = process.env.JWT_SECRET_KEY;
         const expiresIn = 7 * 24 * 60 * 60;
         
-        
-
         jwt.sign({ email, id: existingUser._id }, secretKey, { expiresIn }, (err, token) => {
             if (err) throw err;
             return res.json({ status: 200, message: "Login successfull",data:{name:existingUser.name,email:existingUser.email,id:existingUser._id.toString()},token });
@@ -78,11 +75,9 @@ exports.login = async (req, res) => {
 exports.profile = async (req,res) => {
     
     try {
-        
         const userId = req.userId;
         const user = await User.findById(userId).select('-password').populate('blogPosts.postId');
         return res.json({ status: 200, message: 'Token verified', data: user });
-
     } catch (err) {
         return  res.status(400).json({status:499,message:"Something went wrong!!!"});
     }

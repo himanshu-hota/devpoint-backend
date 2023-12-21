@@ -1,5 +1,4 @@
 const { Post } = require("../Models/Post");
-const {verifyToken} = require('../util/verfiyToken');
 
 exports.getBlogs = async (req, res) => {
 
@@ -13,10 +12,9 @@ exports.getBlogs = async (req, res) => {
 }
 
 exports.getSingleBlog = async (req, res) => {
-
+    
     try {
 
-        
         const { blogId } = req.params;
 
         const post = await Post.findById(blogId).populate('author', ['name']);

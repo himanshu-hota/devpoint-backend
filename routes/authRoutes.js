@@ -10,7 +10,7 @@ router.post('/register', registerValdator ,authController.register);
 
 router.post('/login', loginValdator, authController.login);
 
-router.post('/profile', verifyToken, authController.profile);
+router.get('/profile', verifyToken, authController.profile);
 
 router.post('/logout', verifyToken, authController.logout);
 

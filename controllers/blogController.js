@@ -24,7 +24,6 @@ exports.create = async (req, res) => {
         }
         
         const authorId = req.userId;
-
         const { title, summary, content } = req.body;
         uploadedImage = await uploadImage(filePath);
         deleteFileSync(filePath);
@@ -36,15 +35,14 @@ exports.create = async (req, res) => {
         return res.json({ status: 200, message: "Blog Created!!!", imgUrl: uploadedImage.secure_url });
     } catch (err) {
         deleteImage(uploadedImage.publicId);
-        console.log(err);
-       return  res.status(400).json({ status: 400, message: "Could not create the blog!!!" });
+        return  res.status(400).json({ status: 400, message: "Could not create the blog!!!" });
     }
 };
 
 exports.update = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-
+    
     try {
         const errors = validationResult(req);
             if (!errors.isEmpty()) {

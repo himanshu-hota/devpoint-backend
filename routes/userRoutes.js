@@ -15,7 +15,4 @@ router.get('/:userId', verifyToken, userController.userprofile);
 router.post('/update', verifyToken, userController.updateProfile);
 
 
-
-
-
 module.exports = router;

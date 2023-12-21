@@ -9,7 +9,6 @@ const { deleteImage, uploadImage } = require("../config/cloudinary");
 const { deleteFileSync } = require('../util/deleteFile');
 
 exports.userprofile = async (req, res) => {
-
     try {
         const posts = await Post.find().populate('author', ['name']).sort({ createAt: -1 }).limit(20);
         return res.json({ status: 200, message: "file received", posts: posts });
@@ -81,7 +80,7 @@ exports.updateProfile = async (req, res) => {
         deleteImage(newProfilePictureURL.public_id);
         await session.abortTransaction();
         session.endSession();
-        console.log(err);
+        
         return res.status(400).json({ status: 400, message: 'Could not update the profile!!!' });
     }
 };
