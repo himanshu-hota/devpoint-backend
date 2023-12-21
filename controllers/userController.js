@@ -55,16 +55,14 @@ exports.updateProfile = async (req, res) => {
         if(filePath) deleteFileSync(filePath);
 
         const passwordMatch = bcrypt.compareSync(currentpassword, userDoc.password);
-        const passwordMatch2 = password.length > 8 ? (password == confirmpassword) : false;
         if (!passwordMatch) {
             return res.status(400).json({ status: 400, message: 'Invalid password!!!!' });
         }
 
-        const tempProfilePicture = 'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg';
-
+        
         const updatedData = {
             name: name ? name : userDoc.name,
-            profilePicture: filePath ? newProfilePictureURL.secure_url : userDoc.profilePicture || tempProfilePicture,
+            profilePicture: filePath ? newProfilePictureURL.secure_url : userDoc.profilePicture,
             publicId: newProfilePictureURL.public_id
         };
 
@@ -83,6 +81,7 @@ exports.updateProfile = async (req, res) => {
         deleteImage(newProfilePictureURL.public_id);
         await session.abortTransaction();
         session.endSession();
+        console.log(err);
         return res.status(400).json({ status: 400, message: 'Could not update the profile!!!' });
     }
 };

@@ -18,8 +18,8 @@ const app = express();
 dotenv.config();
 
 // essentials
-app.use(morgan('combined'));
-app.use(helmet());
+// app.use(morgan('combined'));
+// app.use(helmet());
 
 // body parser for plain text
 app.use(express.json());
@@ -47,6 +47,7 @@ app.get('*', (req, res) => {
 
 // error handling
 app.use((err, req, res, next) => {
+    console.log(err);
     return res.status(500).send('Something went wrong!');
 });
 
