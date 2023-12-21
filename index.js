@@ -1,13 +1,13 @@
 const express = require('express');
-// const cors = require('cors');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser')
 const morgan = require('morgan');
 const helmet = require('helmet');
 // const path = require('path');
 
-const {upload} = require('./middlewares/multerMiddleware');
+const { upload } = require('./middlewares/multerMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const blogsRoutes = require('./routes/blogsRoutes');
@@ -15,77 +15,44 @@ const userRoutes = require('./routes/userRoutes');
 
 
 const app = express();
-
+dotenv.config();
 
 // essentials
 app.use(morgan('combined'));
 app.use(helmet());
-// make env variables available in this file
-dotenv.config();
+
 // body parser for plain text
 app.use(express.json());
+// app.use(express.json({ limit: '50mb' }));
+// app.use(express.urlencoded({ limit: '50mb', extended: true, }));
 // handles cookies
-app.use(cookieParser())
+// app.use(cookieParser());
 // allow cors requestes
-// const corsOptions = {
-//     origin: '*', // Use * if you want to allow any origin
-//     credentials: true, // Enable credentials (e.g., cookies, authentication headers)
-// };
-// app.use(cors(corsOptions));
-// Enable CORS for all routes
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', 'https://devpoint-frontend.vercel.app/*');
-//     res.setHeader('Access-Control-Allow-Credentials', 'true');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-
-//     if (req.method === 'OPTIONS') {
-//         // Respond to the OPTIONS request and prevent the next middleware from being called.
-//         return res.status(200).end();
-//     }
-
-
-//     next();
-// });
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://devpoint-frontend.vercel.app');
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+const corsOptions = {
+    origin: process.env.ENDPOINT
+}
+app.use(cors(corsOptions));
 
 
 // routes
-app.use('/auth',authRoutes);
-app.use('/blog',upload.single('file'), blogRoutes);
+app.use('/auth', authRoutes);
+app.use('/blog', upload.single('file'), blogRoutes);
 app.use('/blogs', blogsRoutes);
 app.use('/user', upload.single('file'), userRoutes);
 
 // Default route
 app.get('*', (req, res) => {
-    res.status(404).json({message:'You reached the space station!!!'});
+    return res.status(404).json({ message: 'You reached the space station!!!' });
 });
 
+// error handling
 app.use((err, req, res, next) => {
-    res.status(500).send('Something went wrong!');
+    return res.status(500).send('Something went wrong!');
 });
 
 
 const MONGO_URL = process.env.MONGODB_URL;
-const PORT = process.env.PORT || 4000; 
-
-// Use the newUrlParser and useUnifiedTopology options
-// const mongooseOptions = {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// };
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    res.status(500).send('Internal server error');
-});
+const PORT = process.env.PORT || 4000;
 
 
 // Create a Mongoose connection using promises
@@ -96,5 +63,6 @@ mongoose
         app.listen(PORT);
     })
     .catch((err) => {
-        res.status(500).json({message:'Internal server error'});
+        // res.status(500).json({message:'Internal server error'});
+        console.log('Could not start the server');
     });

@@ -38,14 +38,7 @@ exports.updateProfile = async (req, res) => {
             filePath = file.destination + file.filename;
         }
 
-        const { token } = req.cookies;
-        const secretKey = process.env.JWT_SECRET_KEY;
-        let userId = '';
-        jwt.verify(token, secretKey, (err, info) => {
-            if (err) throw err;
-            userId = info.id;
-        });
-
+        const userId = req.userId;
 
         if (filePath) {
             newProfilePictureURL = await uploadImage(filePath);
@@ -103,7 +96,6 @@ exports.bloggerProfile = async (req, res) => {
     try {
 
         const { bloggerId } = req.params;
-
         const blogger = await User.findById(bloggerId).select(['-password']).populate('blogPosts.postId', ['title', 'cover']);
         return res.json({ status: 200, message: "Blogger Found!!!", blogger: blogger });
     } catch (err) {

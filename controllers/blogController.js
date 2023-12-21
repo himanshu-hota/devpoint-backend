@@ -8,8 +8,6 @@ const { uploadImage, deleteImage } = require('../config/cloudinary');
 const { deleteFileSync } = require('../util/deleteFile');
 
 
-
-
 exports.create = async (req, res) => {
     let uploadedImage = '';
     try {
@@ -25,14 +23,7 @@ exports.create = async (req, res) => {
             filePath = file.destination + file.filename;
         }
         
-        const { token } = req.cookies;
-        
-        const secretKey = process.env.JWT_SECRET_KEY;
-        let authorId = '';
-        jwt.verify(token, secretKey, (err, info) => {
-            if (err) throw err;
-            authorId = info.id;
-        });
+        const authorId = req.userId;
 
         const { title, summary, content } = req.body;
         uploadedImage = await uploadImage(filePath);
@@ -45,6 +36,7 @@ exports.create = async (req, res) => {
         return res.json({ status: 200, message: "Blog Created!!!", imgUrl: uploadedImage.secure_url });
     } catch (err) {
         deleteImage(uploadedImage.publicId);
+        console.log(err);
        return  res.status(400).json({ status: 400, message: "Could not create the blog!!!" });
     }
 };
@@ -67,19 +59,13 @@ exports.update = async (req, res) => {
             filePath = file.destination + file.filename;
         }
 
-        const { token } = req.cookies;
-        const secretKey = process.env.JWT_SECRET_KEY;
-        let authorId = '';
-        jwt.verify(token, secretKey, (err, info) => {
-            if (err) throw err;
-            authorId = info.id;
-        });
+        const authorId = req.userId;
 
         const { title, summary, content, postId } = req.body;
 
         const postDoc = await Post.findById(postId).session(session);
 
-        if (postDoc.author._id.toString() !== authorId) {
+        if (postDoc.author._id.toString() !== authorId.toString()) {
             throw new Error('You are not authorized to update this post');
         }
 
@@ -114,13 +100,7 @@ exports.delete = async (req, res) => {
     try {
         
         const { blogId } = req.params;
-        const { token } = req.cookies;
-        const secretKey = process.env.JWT_SECRET_KEY;
-        let authorId = '';
-        jwt.verify(token, secretKey, (err, info) => {
-            if (err) throw err;
-            authorId = info.id;
-        });
+        const authorId = req.userId;
 
         const postDoc = await Post.findById(blogId);
         const publicId = postDoc?.publicId;
@@ -130,8 +110,6 @@ exports.delete = async (req, res) => {
             { $pull: { blogPosts: { postId: blogId } } },
             { multi: true } // remove all matching items (optional)
         )
-
-      
 
         await deleteImage(publicId);
 
