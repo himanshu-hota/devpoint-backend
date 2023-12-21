@@ -104,6 +104,9 @@ exports.delete = async (req, res) => {
 
         const postDoc = await Post.findById(blogId);
         const publicId = postDoc?.publicId;
+        if(authorId.toString() !== postDoc.author.toString()){
+            return res.json({ status: 40, message: 'Unauthorized access to delete the post!!!' });
+        }
         await Post.findByIdAndDelete(blogId);
         await User.findOneAndUpdate(
             { _id: authorId },
