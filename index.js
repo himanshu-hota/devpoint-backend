@@ -29,7 +29,7 @@ app.use(express.json());
 // app.use(cookieParser());
 // allow cors requestes
 const corsOptions = {
-    origin: process.env.ENDPOINT
+    origin: '*'
 }
 app.use(cors(corsOptions));
 
