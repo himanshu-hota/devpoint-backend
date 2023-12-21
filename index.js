@@ -18,8 +18,8 @@ const app = express();
 dotenv.config();
 
 // essentials
-// app.use(morgan('combined'));
-// app.use(helmet());
+app.use(morgan('combined'));
+app.use(helmet());
 
 // body parser for plain text
 app.use(express.json());
